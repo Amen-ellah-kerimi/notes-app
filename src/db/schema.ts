@@ -23,12 +23,15 @@ export const notes = table(
     {
         id: t.integer().primaryKey().generatedAlwaysAsIdentity(),
         slug: t.varchar().$default(() => generateUniqueString(16)),
-        title: t.varchar({ length: 256 }),
-        ownerId: t.text('owner_id').references(() => users.id),
+        title: t.varchar({ length: 256 }).notNull(),
+        content: t.text(),
+        ownerId: t.text('owner_id').references(() => users.id).notNull(),
+        ...timestamps,
     },
     (table) => [
         t.uniqueIndex("slug_idx").on(table.slug),
         t.index("title_idx").on(table.title),
+        t.index("owner_idx").on(table.ownerId),
     ]
 );
 

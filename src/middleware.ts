@@ -1,22 +1,33 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { db } from '@/db';
 import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-
-export needAuthentificationRoute = createRouteMatcher(['/notes(.*)']);
-export isProtectedRoute = createRouteMatcher(['/admin(.*)']);
+export const isPublicRoute    = createRouteMatcher(['/']);
+export const isPrivateRoute   = createRouteMatcher(['/notes(.*)']);
+export const isIgnoredRoute   = createRouteMatcher(['/api/webhooks(.*)']);
+export const isProtectedRoute = createRouteMatcher(['/admin(.*)']);
 
 export default clerkMiddleware(async (auth, req) => {
+    console.log(`Middleware running for ${req.url}`);
     const {userId, redirectToSignIn} = await auth();
-    if (needAuthentificationRoute(req)) await auth.protect();
+    if (isPrivateRoute(req)) {
+        console.log(`- Request to private route: ${req.url}`);
+        await auth.protect();
+        console.log(`- auth().protect() was called.`);
+    }
     if (isProtectedRoute(req)) {
+        console.log(`- Request to protected route: ${req.url}, userId: ${userId}`);
+        await auth.protect();
         if(!userId){
-            console.error("an unauthenticated user tried to access admin panel");
+            console.log(`- Unauthorized user attempted to access admin panel.`);
             return redirectToSignIn();
         }
-        try {
-            const isAuthorized = db.select(isAdmin).from(users).where(eq).limit(1);
+    }
+
+
+
+
             
 })
 
@@ -29,3 +40,6 @@ export const config = {
     '/(api|trpc)(.*)',
   ],
 }
+
+ 
+
