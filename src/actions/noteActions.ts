@@ -3,14 +3,28 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
-import { notes } from "@/db/schema";
+import { notes, users } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+
+
+async function syncUser(userId: string){
+  
+  try {
+    const existingUser = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+    if(existingUser.length === 0){
+      await db.insert(users).values({id: userId})
+    }
+  } catch(error){
+      console.error("Error Syncing with User");
+      console.error(error.message);
+  }
+}
+
 
 export const getNotes = async () => {
     const { userId } = await auth();
     if (!userId) throw new Error("Unauthorized");
-
     const data = await db.select().from(notes).where(eq(notes.ownerId, userId));
     return data;
 };
@@ -18,7 +32,7 @@ export const getNotes = async () => {
 export const createNote = async (formData: FormData) => {
     const { userId } = await auth();
     if (!userId) throw new Error("Unauthorized");
-
+    await syncUser(userId);
     const title = formData.get("title") as string;
     const content = formData.get("content") as string;
 
