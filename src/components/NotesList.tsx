@@ -6,7 +6,7 @@ import { useState } from "react";
 interface Note {
   id: number;
   title: string;
-  content: string;
+  content: string | null;
   slug: string | null;
   ownerId: string;
   created_at: Date;
@@ -63,7 +63,7 @@ export default function NotesList({ notes }: NotesListProps) {
             </button>
           </div>
           
-          <p className="text-gray-700 mb-4 whitespace-pre-wrap">{note.content}</p>
+          <p className="text-gray-700 mb-4 whitespace-pre-wrap">{note.content || "No content"}</p>
           
           <div className="text-sm text-gray-500 flex justify-between">
             <span>Created: {new Date(note.created_at).toLocaleDateString()}</span>

@@ -2,6 +2,7 @@
 
 import { createNote } from "@/actions/noteActions";
 import { useState } from "react";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export default function CreateNoteForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -11,6 +12,13 @@ export default function CreateNoteForm() {
     try {
       await createNote(formData);
     } catch (error) {
+      // Check if this is a redirect error (successful creation)
+      if (isRedirectError(error)) {
+        // Re-throw redirect errors to allow navigation to proceed
+        throw error;
+      }
+
+      // Handle actual errors
       console.error("Failed to create note:", error);
       alert("Failed to create note. Please try again.");
     } finally {

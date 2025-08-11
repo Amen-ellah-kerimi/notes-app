@@ -9,15 +9,19 @@ import { redirect } from "next/navigation";
 
 
 async function syncUser(userId: string){
-  
+
   try {
     const existingUser = await db.select().from(users).where(eq(users.id, userId)).limit(1);
     if(existingUser.length === 0){
-      await db.insert(users).values({id: userId})
+      await db.insert(users).values({
+        id: userId,
+        email: "", // Will be updated by webhook when available
+        isAdmin: false
+      })
     }
   } catch(error){
       console.error("Error Syncing with User");
-      console.error(error.message);
+      console.error(error instanceof Error ? error.message : String(error));
   }
 }
 

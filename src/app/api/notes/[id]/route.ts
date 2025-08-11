@@ -6,16 +6,17 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
-    
+
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    
-    const noteId = parseInt(params.id);
+
+    const resolvedParams = await params;
+    const noteId = parseInt(resolvedParams.id);
     
     if (isNaN(noteId)) {
       return NextResponse.json({ error: "Invalid note ID" }, { status: 400 });
@@ -46,16 +47,17 @@ export async function DELETE(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
-    
+
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    
-    const noteId = parseInt(params.id);
+
+    const resolvedParams = await params;
+    const noteId = parseInt(resolvedParams.id);
     
     if (isNaN(noteId)) {
       return NextResponse.json({ error: "Invalid note ID" }, { status: 400 });

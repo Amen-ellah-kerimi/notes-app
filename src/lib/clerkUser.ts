@@ -4,7 +4,8 @@ import { clerkClient } from "@clerk/nextjs/server";
 
 export async function getUserInfo(userId: string){
   try {
-    const user = await clerkClient.user.getUser(userId);
+    const client = await clerkClient();
+    const user = await client.users.getUser(userId);
     return {
       id: user.id,
       email: user.emailAddresses[0]?.emailAddress || "",
@@ -12,7 +13,7 @@ export async function getUserInfo(userId: string){
       lastName: user.lastName || null,
       isAdmin: false,
     };
-  } catch (error){
+  } catch {
     throw new Error("Failed to fetch user from clerk")
   }
 }

@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/db";
 import { notes } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
@@ -16,7 +16,7 @@ export async function GET() {
       .select()
       .from(notes)
       .where(eq(notes.ownerId, userId))
-      .orderBy(notes.created_at);
+      .orderBy(desc(notes.created_at));
 
     return NextResponse.json(userNotes);
   } catch (error) {

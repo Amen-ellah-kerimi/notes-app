@@ -1,4 +1,4 @@
-import { pgEnum, pgTable as table  } from "drizzle-orm/pg-core";
+import { pgTable as table  } from "drizzle-orm/pg-core";
 import { timestamps } from "./columns.helpers";
 import * as t from "drizzle-orm/pg-core";
 
