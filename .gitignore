@@ -42,7 +42,3 @@ next-env.d.ts
 
 
 
-# docs
-DEBUGGING_GUIDE.md
-FALSE_ALERT_FIX.md
-test-db-connection.js
